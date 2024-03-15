@@ -1,0 +1,39 @@
+name: GitHub Actions CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install linters
+        run: |
+          # Configure the Homebrew environment for this step
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+          # Install linters using Homebrew
+          brew install actionlint markdownlint-cli2
+
+      - name: Lint GitHub Actions workflow files
+        run: |
+          # Configure the Homebrew environment for this step
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+          # Run actionlint with disabled shellcheck integration
+          actionlint -color -shellcheck=
+
+      - name: Lint Markdown files
+        run: |
+          # Configure the Homebrew environment for this step
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+          # Run markdownlint with specific rule exclusions
+          # - MD041 (First line in a file should be a top-level heading)
+          # - MD013 (Line length)
+          # - MD012 (Multiple consecutive blank lines)
+          # - MD001 (Heading levels should only increment by one level at a time)
+          markdownlint --disable MD041 MD013 MD012 MD001 -- .github/release-notes-template.md README.md

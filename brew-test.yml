@@ -1,0 +1,33 @@
+name: Homebrew Test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Homebrew
+      run: |
+        echo "$GITHUB_ENV"
+        # echo PATH="/home/linuxbrew/.linuxbrew/bin:$PATH" >> "$GITHUB_ENV"
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        echo "Running brew update..."
+        brew update
+        echo "Running brew install hello..."
+        brew install hello
+        echo "Running brew list..."
+        brew list
+
+    - name: Run tests or other commands
+      run: |
+        # Add your test commands or other steps that depend on Homebrew
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        echo "Running brew list (second time, in a new step)..."
+        brew list
+        echo "Running hello..."
+        hello
+
