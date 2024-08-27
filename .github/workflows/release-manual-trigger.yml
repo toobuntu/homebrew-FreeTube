@@ -15,8 +15,12 @@ on:
 jobs:
   manual-build:
     # Use macos-14 for arm64 architecture: https://github.blog/changelog/2024-01-30-github-actions-introducing-the-new-m1-macos-runner-available-to-open-source/
-    # macos-latest refers to the macos-12 (x86_64) runner image until April–June 2024: https://github.blog/changelog/2024-01-30-github-actions-macos-14-sonoma-is-now-available/ and https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
-    runs-on: macos-14
+    # macos-latest refers to the macos-14 (arm64) runner image as of 20 May 2024:
+    #   https://github.blog/changelog/2024-05-20-actions-upcoming-changes-to-github-hosted-macos-runners/
+    #   https://github.com/actions/runner-images?tab=readme-ov-file#available-images
+    #   https://github.blog/changelog/2024-01-30-github-actions-macos-14-sonoma-is-now-available/
+    #   https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
+    runs-on: macos-latest
     outputs:
       extracted-package-version: "${{ steps.extract-version.outputs.package_version }}"
 

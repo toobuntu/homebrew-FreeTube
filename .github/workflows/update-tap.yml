@@ -8,7 +8,7 @@ on:
 
 jobs:
   update-homebrew-cask:
-    runs-on: macos-14
+    runs-on: macos-latest
 
     env:
       TAP: "pikachuexe/freetube"
