@@ -63,7 +63,7 @@ jobs:
 
             etag_file_path=".github/etags/${prefix}_$transformed_base_name.txt"
 
-            # Save the current ETag value before downloading
+            # Save the current ETag value into memory before downloading
             if [ -r "$etag_file_path" ]; then
               previous_etag=$(< "$etag_file_path")
             else
@@ -75,10 +75,11 @@ jobs:
             fi
 
             # Download the file only if its ETag has changed
+            # Split the curl invocation due to https://github.com/curl/curl/issues/5309.
             if ! curl --fail --silent --show-error --location \
               --retry 3 --retry-all-errors \
               --etag-save "$etag_file_path" \
-              --output "/dev/null" \
+              --head --output "/dev/null" \
               --url "https://raw.githubusercontent.com/${{ env.source_repository_path }}/${{ env.source_repository_branch }}/$file_path"; then
               echo "Error saving ETag for $file_path."
               echo "::error::cURL error: Failed to save ETag for $file_path."
@@ -100,9 +101,9 @@ jobs:
 
             # Check that the ETag value is nonempty
             if test -n "$current_etag"; then
-              echo "current_etag exists and is non-empty. Continuing..."
+              : # null command
             else
-              echo "current_etag is empty or does not exist. Exiting..."
+              echo "::error::Error: $etag_file_path is empty or does not exist."
               exit 1  # Exit with an error code to fail the workflow
             fi
 
