@@ -1,0 +1,50 @@
+name: Sync Homebrew Cask CI Workflows
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # run daily at 06:00 UTC
+  workflow_dispatch:      # allow manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    # Dummy matrix so actionlint recognizes audit_args.
+    # This workflow only copies and patches upstream CI files;
+    # the matrix is not actually used here.
+    strategy:
+      matrix:
+        # audit_args must be an array of strings.
+        # Using an empty array satisfies actionlint's type checker.
+        audit_args:
+          - []
+
+    steps:
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@main
+        with:
+          core: false
+          cask: true
+          token: ${{ secrets.UPDATE_CI_YML }}
+
+      - name: Sync upstream workflows
+        run: |
+          mkdir -p .github/workflows
+          cp -a "$(brew --repository homebrew/cask)"/.github/workflows/ci*.yml .github/workflows/
+
+      - name: Patch audit args inside run block
+        run: |
+          sed -i.bak \
+            "/brew audit --cask/ s#join(matrix.audit_args, ' ') }}#join(matrix.audit_args, ' ') }} --no-signing#" \
+            .github/workflows/ci.yml
+          rm -f .github/workflows/ci.yml.bak
+
+      - name: Commit and push changes
+        if: ${{ github.repository_owner == 'toobuntu' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/ci*.yml
+          git commit -m "Sync upstream CI workflows and disable signature audit" || echo "No changes to commit"
+          git push origin HEAD:${{ github.ref_name }}
