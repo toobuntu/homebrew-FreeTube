@@ -35,10 +35,25 @@ jobs:
 
       - name: Patch - Do not tap official Homebrew repositories
         run: |
-          yq -i '
-            (.jobs[].steps[] | select(.uses | test("^Homebrew/actions/setup-homebrew")).with.core) = false |
-            (.jobs[].steps[] | select(.uses | test("^Homebrew/actions/setup-homebrew")).with.cask) = false
-          ' .github/workflows/ci.yml
+          awk '
+            # When we see the setup-homebrew action, set a flag
+            /uses:[[:space:]]*Homebrew\/actions\/setup-homebrew/ { in_homebrew=1; print; next }
+
+            # If we hit another "uses:" line, clear the flag
+            /^ *uses:/ { in_homebrew=0 }
+
+            # While inside the setup-homebrew block, toggle booleans
+            in_homebrew && /^[[:space:]]*core:[[:space:]]*true/ {
+              sub(/true/, "false")
+            }
+            in_homebrew && /^[[:space:]]*cask:[[:space:]]*true/ {
+              sub(/true/, "false")
+            }
+
+            { print }
+          ' .github/workflows/ci.yml > .github/workflows/ci.yml.tmp
+
+          mv -f .github/workflows/ci.yml.tmp .github/workflows/ci.yml
 
       - name: Patch - Disable signature audit
         run: |
