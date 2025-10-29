@@ -33,7 +33,14 @@ jobs:
           mkdir -p .github/workflows
           cp -a "$(brew --repository homebrew/cask)"/.github/workflows/ci*.yml .github/workflows/
 
-      - name: Patch audit args inside run block
+      - name: Patch - Do not tap official Homebrew repositories
+        run: |
+          yq -i '
+            (.jobs[].steps[] | select(.uses | test("^Homebrew/actions/setup-homebrew")).with.core) = false |
+            (.jobs[].steps[] | select(.uses | test("^Homebrew/actions/setup-homebrew")).with.cask) = false
+          ' .github/workflows/ci.yml
+
+      - name: Patch - Disable signature audit
         run: |
           sed -i.bak \
             "/brew audit --cask/ s#join(matrix.audit_args, ' ') }}#join(matrix.audit_args, ' ') }} --no-signing#" \
