@@ -62,6 +62,24 @@ jobs:
             .github/workflows/ci.yml
           rm -f .github/workflows/ci.yml.bak
 
+      - name: Patch ci-retry.yml schedule
+              # Convert hourly to daily
+        run: |
+          awk '
+            BEGIN { patched=0 }
+            /cron:/ {
+              sub(/"0 \*\/1 \* \* \*"/, "\"0 0 * * *\"")
+              patched=1
+            }
+            { print }
+            END {
+              if (!patched) {
+                printf "::warning file=.github/workflows/ci-retry.yml::No hourly cron line found to patch\n" > "/dev/stderr"
+              }
+            }
+          ' .github/workflows/ci-retry.yml > .github/workflows/ci-retry.yml.tmp
+          mv -f .github/workflows/ci-retry.yml.tmp .github/workflows/ci-retry.yml
+
       - name: Commit and push changes
         if: ${{ github.repository_owner == 'toobuntu' }}
         run: |
