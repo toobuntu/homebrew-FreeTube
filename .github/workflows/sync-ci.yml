@@ -1,8 +1,10 @@
 name: Sync Homebrew Cask CI Workflows
 
 on:
-  schedule:
-    - cron: "0 6 * * *"   # run daily at 06:00 UTC
+  # NOTE: This action succeeded until the PAT expired on 28 Nov 2025, so disabling the cron job as of 06 Dec 2025.
+  # NOTE: Testing was successful with a fine-grained PAT matching the permissions granted to GitHub App token in upstream PR.
+  # schedule:
+    # - cron: "0 6 * * *"   # run daily at 06:00 UTC
   workflow_dispatch:      # allow manual trigger
 
 jobs:
