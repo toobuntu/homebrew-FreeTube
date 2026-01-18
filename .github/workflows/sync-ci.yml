@@ -31,13 +31,6 @@ jobs:
             .github/workflows
           path: homebrew-cask-source
 
-      - name: Debug checkout structure
-        run: |
-          echo "Contents of homebrew-cask-source:"
-          ls -la homebrew-cask-source/
-          echo "Looking for workflows:"
-          find homebrew-cask-source -name "*.yml" -o -name "*.yaml"
-
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
@@ -56,16 +49,11 @@ jobs:
             --include='ci*.yml' \
             --exclude='*' \
             --delete \
-            homebrew-cask-source/workflows/ .github/workflows/
-
-      # - name: Sync upstream ci workflows
-      #   run: |
-      #     mkdir -p .github/workflows
-      #     cp -a "$(brew --repository homebrew/cask)"/.github/workflows/ci*.yml .github/workflows/
+            homebrew-cask-source/.github/workflows/ .github/workflows/
 
       # Avoid accidental staging of other upstream workflows
       - name: Clean temporary checkout
-        run: rm -rf homebrew-cask-workflows
+        run: rm -rf homebrew-cask-source
 
       - name: Patch ci.yml - Do not tap official Homebrew repositories
         run: |
