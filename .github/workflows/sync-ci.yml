@@ -31,13 +31,13 @@ jobs:
             .github/workflows
           path: homebrew-cask-source
 
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@main
-        with:
-          core: false
-          cask: false
-          token: ${{ secrets.UPDATE_CI_YML }}
+      # - name: Set up Homebrew
+      #   id: set-up-homebrew
+      #   uses: Homebrew/actions/setup-homebrew@main
+      #   with:
+      #     core: false
+      #     cask: false
+      #     token: ${{ secrets.UPDATE_CI_YML }}
 
       - name: Debug checkout structure right before rsync
         run: |
@@ -45,11 +45,13 @@ jobs:
           pwd
           echo ""
           echo "=== Contents of homebrew-cask-source ==="
+          # shellcheck disable=SC2012
           ls -laR homebrew-cask-source/ | head -50
           echo ""
           echo "=== Does . github/workflows exist? ==="
           if [ -d "homebrew-cask-source/. github/workflows" ]; then
             echo "YES - directory exists"
+            # shellcheck disable=SC2012
             ls -la homebrew-cask-source/.github/workflows/
           else
             echo "NO - directory does not exist"
