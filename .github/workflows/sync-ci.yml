@@ -22,7 +22,7 @@ jobs:
     steps:
       # Checkout before setup-homebrew to avoid Authorization header conflicts
       - name: Sparse checkout Homebrew cask workflows
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           # Track latest default branch; do not pin a ref
           repository: Homebrew/homebrew-cask
@@ -38,6 +38,22 @@ jobs:
           core: false
           cask: false
           token: ${{ secrets.UPDATE_CI_YML }}
+
+      - name: Debug checkout structure right before rsync
+        run: |
+          echo "=== Current directory ==="
+          pwd
+          echo ""
+          echo "=== Contents of homebrew-cask-source ==="
+          ls -laR homebrew-cask-source/ | head -50
+          echo ""
+          echo "=== Does . github/workflows exist? ==="
+          if [ -d "homebrew-cask-source/. github/workflows" ]; then
+            echo "YES - directory exists"
+            ls -la homebrew-cask-source/.github/workflows/
+          else
+            echo "NO - directory does not exist"
+          fi
 
       - name: Sync upstream ci workflows
         run: |
