@@ -2,7 +2,7 @@ name: CI Retry Failed Jobs
 
 on:
   schedule:
-    - cron: "0 */1 * * *"
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   retry-failed:
     name: Re-run failed jobs for labeled PRs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
       - name: Re-run failed jobs
