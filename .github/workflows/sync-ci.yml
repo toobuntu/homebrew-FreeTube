@@ -20,7 +20,9 @@ jobs:
           - []
 
     steps:
-      # Checkout before setup-homebrew to avoid Authorization header conflicts
+      - name: Checkout repo
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
       - name: Sparse checkout Homebrew cask workflows
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
