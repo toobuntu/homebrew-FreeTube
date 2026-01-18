@@ -31,6 +31,13 @@ jobs:
             .github/workflows
           path: homebrew-cask-source
 
+      - name: Debug checkout structure
+        run: |
+          echo "Contents of homebrew-cask-source:"
+          ls -la homebrew-cask-source/
+          echo "Looking for workflows:"
+          find homebrew-cask-source -name "*.yml" -o -name "*.yaml"
+
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@main
@@ -42,8 +49,13 @@ jobs:
       - name: Sync upstream ci workflows
         run: |
           mkdir -p .github/workflows
-          rsync --archive --verbose \
-            --include='ci*.yml' --exclude='*' --delete \
+          rsync \
+            --recursive \
+            --times \
+            --verbose \
+            --include='ci*.yml' \
+            --exclude='*' \
+            --delete \
             homebrew-cask-source/workflows/ .github/workflows/
 
       # - name: Sync upstream ci workflows
