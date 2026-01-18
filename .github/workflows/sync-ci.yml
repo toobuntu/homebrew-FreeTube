@@ -29,7 +29,7 @@ jobs:
           # Cone mode is default; specify the directory
           sparse-checkout: |
             .github/workflows
-          path: homebrew-cask-workflows
+          path: homebrew-cask-source
 
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -42,8 +42,9 @@ jobs:
       - name: Sync upstream ci workflows
         run: |
           mkdir -p .github/workflows
-          rsync --archive --include='ci*.yml' --exclude='*' --delete \
-            homebrew-cask-workflows/.github/workflows/ .github/workflows/
+          rsync --archive --verbose \
+            --include='ci*.yml' --exclude='*' --delete \
+            homebrew-cask-source/workflows/ .github/workflows/
 
       # - name: Sync upstream ci workflows
       #   run: |
